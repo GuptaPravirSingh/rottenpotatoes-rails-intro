@@ -11,7 +11,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    # if there is no sorting criteria display all movies list
+     if params[:sorting_criteria]==nil
+      @movies = Movie.all
+    # else sort according to criteria ref by :sorting criteria
+    else
+      @movies = Movie.order(params[:sorting_criteria])
+      @sort_col = params[:sorting_criteria]
+    end
   end
 
   def new
