@@ -15,17 +15,46 @@ class MoviesController < ApplicationController
     @sort_col= params[:sorting_criteria]
     @all_ratings = Movie.all_ratings
   
-     @movies = Movie.all.order(@sort_col)
+    @movies = Movie.all.order(@sort_col)
     if params[:ratings]
-      @movies = Movie.where({rating:  params[:ratings].keys } ).order(@sort_col)
-    end
-    @selected_ratings=params[:ratings]
-    if !@selected_ratings
-       @selected_ratings = Hash.new()
+       session[:selected_ratings] = params[:ratings]
+       # @selected_ratings=params[:ratings]
+       @selected_ratings=session[:selected_ratings]
+       
+       @movies = Movie.where({rating:  params[:ratings].keys } ).order(@sort_col)
+    else if !session[:selected_ratings]
+       session[:selected_ratings] = Hash.new
+       @selected_ratings=Hash.new
        @all_ratings.each do |k|
+        session[:selected_ratings][k]=1
         @selected_ratings.store(k,1)
-       end
+      end
     end
+    
+    @selected_ratings=session[:selected_ratings]
+    
+    
+    if params[:sorting_criteria]
+      session[:sorting_criteria] = params[:sorting_criteria]
+    end
+    
+    @sort_col = params[:sorting_criteria]
+    
+    @movies = Movie.where({rating:  session[:selected_ratings].keys })
+    
+    if session[:sorting_criteria]
+      @movies = @movies.order(session[:sorting_criteria])
+    end
+
+    redir_path = {'selected_ratings': @selected_ratings, 'sorting_criteria':  @sort_col}
+    if ( session[:selected_ratings] != params[:ratings] || session[:sorting_criteria] != params[:sorting_criteria] )
+      redirect_to(redir_path) 
+    end
+    
+  end
+    
+    
+   
     
   end
 
