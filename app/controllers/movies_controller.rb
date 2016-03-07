@@ -18,7 +18,7 @@ class MoviesController < ApplicationController
     @movies = Movie.all.order(@sort_col)
     if params[:ratings]
        session[:selected_ratings] = params[:ratings]
-       # @selected_ratings=params[:ratings]
+       #@selected_ratings=params[:ratings]
        @selected_ratings=session[:selected_ratings]
        
        @movies = Movie.where({rating:  params[:ratings].keys } ).order(@sort_col)
@@ -46,11 +46,6 @@ class MoviesController < ApplicationController
       @movies = @movies.order(session[:sorting_criteria])
     end
 
-    redir_path = {'selected_ratings': @selected_ratings, 'sorting_criteria':  @sort_col}
-    if ( session[:selected_ratings] != params[:ratings] || session[:sorting_criteria] != params[:sorting_criteria] )
-      redirect_to(redir_path) 
-    end
-    
   end
     
     
